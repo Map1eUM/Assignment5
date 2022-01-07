@@ -31,7 +31,7 @@ public class Assignment5 extends PApplet {
     }
 
     public void setup() {
-//        size(600, 500); //size MUST be (NUM_COLS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
+//        size(600, 500); //siz`e MUST be (NUM_COLS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
         noLoop(); //only draw once
     }
 
@@ -55,15 +55,23 @@ public class Assignment5 extends PApplet {
         ellipse(CELLSIZE * column + CELLSIZE / 2, CELLSIZE * row + CELLSIZE / 2, CELLSIZE, CELLSIZE);
         fill(BLACK);
         rect(column * CELLSIZE + CELLSIZE / 2 - ARROW_WIDTH / 2, row * CELLSIZE + CELLSIZE / 2 - 2 * ARROW_HEIGHT / 3, ARROW_WIDTH, ARROW_HEIGHT);
-        ellipse(CELLSIZE * column + CELLSIZE / 2 , row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN, MINE_FIGURE_CIRCLE_DIAMETER, MINE_FIGURE_CIRCLE_DIAMETER);
+        ellipse(CELLSIZE * column + CELLSIZE / 2, row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN, MINE_FIGURE_CIRCLE_DIAMETER, MINE_FIGURE_CIRCLE_DIAMETER);
+        noFill();
     }
 
     //**add your drawNum function here**
     void drawNum(int column, int row, int num) {
+//        fill(BLUE);
+        fill(WHITE);
+        strokeWeight(1);
+        rect(CELLSIZE * column, CELLSIZE * row, CELLSIZE, CELLSIZE);
+//        stroke(BLUE);
         fill(BLUE);
-        stroke(TEXT_STROKE);
+        strokeWeight(TEXT_STROKE);
         textSize(TEXT_SIZE);
-
+        text(str(num), CELLSIZE * column + TEXT_MARGIN, CELLSIZE * (row + 1) - textDescent());
+//        strokeWeight(1);
+//        stroke(BLACK);
     }
 
     public static void main(String... args) {
