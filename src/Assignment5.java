@@ -14,7 +14,7 @@ public class Assignment5 extends PApplet {
 
     final int CELLSIZE = 50;
     final int NUM_ROWS = 10;
-    final int NUM_COLS = 12;
+    final int NUM_COLUMNS = 12;
     final int ARROW_WIDTH = CELLSIZE / 10;
     final int ARROW_HEIGHT = CELLSIZE / 2;
     final int TRIG_HEIGHT = ARROW_WIDTH;
@@ -22,6 +22,7 @@ public class Assignment5 extends PApplet {
     //    final int TEXT_MARGIN = FIGURE_MARGIN;
     final int TEXT_STROKE = 8;
     final int TEXT_SIZE = 40;
+    final int TEXT_MARGIN = 50;
     //colors
     final int WHITE = color(255);
     final int RED = color(255, 0, 0);
@@ -29,17 +30,21 @@ public class Assignment5 extends PApplet {
     final int BLUE = color(0, 0, 255);
     final int YELLOW = color(255, 255, 0);
     //the worst situation is all grid cells are mines.
-    int[] mineX = new int[NUM_COLS * NUM_ROWS];
-    int[] mineY = new int[NUM_COLS * NUM_ROWS];
+    int[] mineX = new int[NUM_COLUMNS * NUM_ROWS];
+    int[] mineY = new int[NUM_COLUMNS * NUM_ROWS];
+    int[] guessX = new int[NUM_COLUMNS * NUM_ROWS];
+    int[] guessY = new int[NUM_COLUMNS * NUM_ROWS];
+    int[] guessVal = new int[NUM_COLUMNS * NUM_ROWS];
     //number of mines.
-    int n = 0;
+    int numMines = 0, numGuess = 0;
+    boolean isLost = false, isWin = false;
 
     public void settings() {
-        size(NUM_COLS * CELLSIZE, NUM_ROWS * CELLSIZE);
+        size(NUM_COLUMNS * CELLSIZE, NUM_ROWS * CELLSIZE);
     }
 
     public void setup() {
-//        size(600, 500); //size MUST be (NUM_COLS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
+//        size(600, 500); //size MUST be (NUM_COLUMNS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
 //        noLoop(); //only draw once
     }
 
@@ -57,14 +62,23 @@ public class Assignment5 extends PApplet {
 //        int[] numValue = {3, 1, 4, 2, 5, 6, 0, 7, 8};
 //
 //        drawNums(numX, numY, numValue, 9);
-        generateMines(mineX,mineY,20);
-        drawMines(mineX,mineY,20);
-
+        generateMines(mineX, mineY, 20);
+        drawMines(mineX, mineY, 20);
+        drawNums(guessX, guessY, guessVal, numGuess);
+        if (isLost) {
+            //bigger text words
+            textSize(3 * TEXT_SIZE / 2);
+            text("GAME OVER! YOU LOST!", TEXT_MARGIN / 3, height / 2);
+        } else if (isWin) {
+            //bigger text words
+            textSize(3 * TEXT_SIZE / 2);
+            text("GAME OVER! YOU WON!", TEXT_MARGIN / 3, height / 2);
+        }
     }
 
     //**add your drawGrid function here**
     void drawGrid() {
-        for (int i = 0; i < NUM_COLS; ++i) {
+        for (int i = 0; i < NUM_COLUMNS; ++i) {
             for (int j = 0; j < NUM_ROWS; ++j) {
                 rect(CELLSIZE * i, CELLSIZE * j, CELLSIZE, CELLSIZE);
             }
@@ -72,25 +86,45 @@ public class Assignment5 extends PApplet {
 
     }
 
-    boolean search(int[] x, int[] y, int n, int c, int r) {
-        for (int i = 0; i < n; ++i) {
-            if (x[i] == c && y[i] == r) return true;
+    boolean searchMines(int[] x, int[] y, int numMines, int mineColumn, int mineRow) {
+        //x and y are coordinates of mines
+        for (int i = 0; i < numMines; ++i) {
+            if (x[i] == mineColumn && y[i] == mineRow) return true;
         }
         return false;
     }
 
-    int insert(int[] x, int[] y, int n, int c, int r) {
-        if (!search(mineX, mineY, n, c, r)) {
-            x[n] = c;
-            y[n++] = r;
+    int insertMines(int[] x, int[] y, int numMines, int mineColumn, int mineRow) {
+        if (!searchMines(mineX, mineY, numMines, mineColumn, mineRow)) {
+            x[numMines] = mineColumn;
+            y[numMines++] = mineRow;
         }
-        return n;
+        return numMines;
     }
+
+    boolean searchGuess(int[] x, int[] y, int numGuess, int guessColumn, int guessRow) {
+        for (int i = 0; i < numGuess; ++i) {
+            if (x[i] == guessColumn && y[i] == guessRow) return true;
+        }
+        return false;
+    }
+
+    int insertGuess(int[] x, int[] y, int[] val, int numGuess, int guessColumn, int guessRow, int guessVal) {
+        if (!searchGuess(x, y, numGuess, guessColumn, guessRow)) {
+            x[numGuess] = guessColumn;
+            val[numGuess] = guessVal;
+            y[numGuess++] = guessRow;
+        }
+        return numGuess;
+    }
+
     void generateMines(int[] mineX, int[] mineY, int MineNum) {
-        while (n < MineNum) {
-            int newMineX = (int) random(NUM_COLS + 1);
-            int newMineY = (int) random(NUM_ROWS + 1);
-            n = insert(mineX, mineY, n, newMineX, newMineY);
+        // keep generating until there's MineNum mines.
+        while (numMines < MineNum) {
+            int newMineX = (int) random(NUM_COLUMNS);
+            int newMineY = (int) random(NUM_ROWS);
+            numMines = insertMines(mineX, mineY, numMines, newMineX, newMineY);
+//            print(str(newMineX) + ' ' + str(newMineY) + ' ' + str(numMines) + "\n");
         }
     }
 
@@ -110,6 +144,37 @@ public class Assignment5 extends PApplet {
         }
     }
 
+    int getX(float x) {
+        return (int) x / CELLSIZE;
+    }
+
+    int getY(float y) {
+        return (int) y / CELLSIZE;
+    }
+
+    public void mouseClicked() {
+        if (isLost) return;
+
+        int gridX = getX(mouseX);
+        int gridY = getY(mouseY);
+//        print("THE CURRENT ONE IS:"+str(gridX)+" "+str(gridY)+'\n');
+        int gridVal = 0;
+        for (int i = 0; i < numMines; ++i) {
+            if ((int) abs(mineX[i] - gridX) <= 1 && (int) abs(mineY[i] - gridY) <= 1) {
+                gridVal++;
+//                print(str(mineX[i])+"   ");
+//                print(str(mineY[i])+"\n");
+            }
+        }
+        if (searchMines(mineX, mineY, numMines, gridX, gridY)) {
+            isLost = true;
+
+        } else {
+            numGuess = insertGuess(guessX, guessY, guessVal, numGuess, gridX, gridY, gridVal);
+            if (numGuess == NUM_ROWS * NUM_COLUMNS - numMines) isWin = true;
+        }
+    }
+
     //**add your drawNums function here**
     void drawNums(int[] column, int[] row, int[] val, int numNumber) {
         for (int i = 0; i < numNumber; ++i) {
@@ -120,7 +185,9 @@ public class Assignment5 extends PApplet {
             strokeWeight(TEXT_STROKE);
             textSize(TEXT_SIZE);
             text(str(val[i]), CELLSIZE * column[i] + CELLSIZE / 2 - textWidth(str(val[i])) / 2, CELLSIZE * (row[i] + 1) - textDescent());
+            strokeWeight(1);
         }
+        noFill();
     }
 
     //**paste your drawMine and drawNum functions from Q1 here**
@@ -148,6 +215,8 @@ public class Assignment5 extends PApplet {
         strokeWeight(TEXT_STROKE);
         textSize(TEXT_SIZE);
         text(str(num), CELLSIZE * column + CELLSIZE / 2 - textWidth(str(num)) / 2, CELLSIZE * (row + 1) - textDescent());
+        strokeWeight(1);
+        noFill();
     }
 
     public static void main(String... args) {
