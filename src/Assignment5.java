@@ -31,28 +31,35 @@ public class Assignment5 extends PApplet {
     //the worst situation is all grid cells are mines.
     int[] mineX = new int[NUM_COLS * NUM_ROWS];
     int[] mineY = new int[NUM_COLS * NUM_ROWS];
+    //number of mines.
+    int n = 0;
+
     public void settings() {
         size(NUM_COLS * CELLSIZE, NUM_ROWS * CELLSIZE);
     }
+
     public void setup() {
 //        size(600, 500); //size MUST be (NUM_COLS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
-        noLoop(); //only draw once
+//        noLoop(); //only draw once
     }
 
     public void draw() {
         drawGrid();
 
-        //create test arrays
-        int[] mineX = {3, 1, 8, 11, 8, 4}; //mine column numbers
-        int[] mineY = {4, 0, 7, 9, 2, 1}; //mine row numbers
+//        //create test arrays
+//        int[] mineX = {3, 1, 8, 11, 8, 4}; //mine column numbers
+//        int[] mineY = {4, 0, 7, 9, 2, 1}; //mine row numbers
+//
+//        drawMines(mineX, mineY, 6); //fill the cells with mines
+//
+//        int[] numX = {0, 10, 5, 2, 6, 7, 1, 11, 6};
+//        int[] numY = {2, 3, 6, 8, 0, 9, 6, 1, 4};
+//        int[] numValue = {3, 1, 4, 2, 5, 6, 0, 7, 8};
+//
+//        drawNums(numX, numY, numValue, 9);
+        generateMines(mineX,mineY,20);
+        drawMines(mineX,mineY,20);
 
-        drawMines(mineX, mineY, 6); //fill the cells with mines
-
-        int[] numX = {0, 10, 5, 2, 6, 7, 1, 11, 6};
-        int[] numY = {2, 3, 6, 8, 0, 9, 6, 1, 4};
-        int[] numValue = {3, 1, 4, 2, 5, 6, 0, 7, 8};
-
-        drawNums(numX, numY, numValue, 9);
     }
 
     //**add your drawGrid function here**
@@ -63,6 +70,28 @@ public class Assignment5 extends PApplet {
             }
         }
 
+    }
+
+    boolean search(int[] x, int[] y, int n, int c, int r) {
+        for (int i = 0; i < n; ++i) {
+            if (x[i] == c && y[i] == r) return true;
+        }
+        return false;
+    }
+
+    int insert(int[] x, int[] y, int n, int c, int r) {
+        if (!search(mineX, mineY, n, c, r)) {
+            x[n] = c;
+            y[n++] = r;
+        }
+        return n;
+    }
+    void generateMines(int[] mineX, int[] mineY, int MineNum) {
+        while (n < MineNum) {
+            int newMineX = (int) random(NUM_COLS + 1);
+            int newMineY = (int) random(NUM_ROWS + 1);
+            n = insert(mineX, mineY, n, newMineX, newMineY);
+        }
     }
 
     //**add your drawMines function here**
@@ -120,6 +149,7 @@ public class Assignment5 extends PApplet {
         textSize(TEXT_SIZE);
         text(str(num), CELLSIZE * column + CELLSIZE / 2 - textWidth(str(num)) / 2, CELLSIZE * (row + 1) - textDescent());
     }
+
     public static void main(String... args) {
         PApplet.main("Assignment5");
     }
