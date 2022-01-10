@@ -15,9 +15,9 @@ public class Assignment5 extends PApplet {
     final int NUM_COLS = 12;
     final int ARROW_WIDTH = CELLSIZE / 10;
     final int ARROW_HEIGHT = CELLSIZE / 2;
-    final int MINE_FIGURE_CIRCLE_DIAMETER = ARROW_WIDTH;
-    final int FIGURE_MARGIN = 10;
-    final int TEXT_MARGIN = FIGURE_MARGIN;
+    final int TRIG_HEIGHT = ARROW_WIDTH;
+    final int FIGURE_MARGIN = 5;
+//    final int TEXT_MARGIN = FIGURE_MARGIN;
     final int TEXT_STROKE = 8;
     final int TEXT_SIZE = 40;
     //colors
@@ -25,6 +25,7 @@ public class Assignment5 extends PApplet {
     final int RED = color(255, 0, 0);
     final int BLACK = color(0);
     final int BLUE = color(0, 0, 255);
+    final int YELLOW = color(255, 255, 0);
 
     public void settings() {
         size(NUM_COLS * CELLSIZE, NUM_ROWS * CELLSIZE);
@@ -51,11 +52,13 @@ public class Assignment5 extends PApplet {
     void drawMine(int column, int row) {
         fill(WHITE);
         rect(CELLSIZE * column, CELLSIZE * row, CELLSIZE, CELLSIZE);
-        fill(RED);
+        fill(YELLOW);
         ellipse(CELLSIZE * column + CELLSIZE / 2, CELLSIZE * row + CELLSIZE / 2, CELLSIZE, CELLSIZE);
         fill(BLACK);
         rect(column * CELLSIZE + CELLSIZE / 2 - ARROW_WIDTH / 2, row * CELLSIZE + CELLSIZE / 2 - 2 * ARROW_HEIGHT / 3, ARROW_WIDTH, ARROW_HEIGHT);
-        ellipse(CELLSIZE * column + CELLSIZE / 2, row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN, MINE_FIGURE_CIRCLE_DIAMETER, MINE_FIGURE_CIRCLE_DIAMETER);
+        float x1 = column * CELLSIZE + CELLSIZE / 2;
+        float y1 = row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN;
+        triangle(x1, y1, x1 - ARROW_WIDTH / 2, y1 + TRIG_HEIGHT, x1 + ARROW_WIDTH / 2, y1 + TRIG_HEIGHT);
         noFill();
     }
 
@@ -69,7 +72,7 @@ public class Assignment5 extends PApplet {
         fill(BLUE);
         strokeWeight(TEXT_STROKE);
         textSize(TEXT_SIZE);
-        text(str(num), CELLSIZE * column + TEXT_MARGIN, CELLSIZE * (row + 1) - textDescent());
+        text(str(num), CELLSIZE * column + CELLSIZE / 2 - textWidth(str(num)) / 2, CELLSIZE * (row + 1) - textDescent());
 //        strokeWeight(1);
 //        stroke(BLACK);
     }
