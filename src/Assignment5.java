@@ -13,7 +13,7 @@ public class Assignment5 extends PApplet {
 //    a list of number cells.
 
     final int CELLSIZE = 50;
-    final int NUM_ROWS = 10;
+    final int NUM_ROWS = 12;
     final int NUM_COLUMNS = 12;
     final int ARROW_WIDTH = CELLSIZE / 10;
     final int ARROW_HEIGHT = CELLSIZE / 2;
@@ -21,9 +21,10 @@ public class Assignment5 extends PApplet {
     final int FIGURE_MARGIN = 5;
     //    final int TEXT_MARGIN = FIGURE_MARGIN;
     final int TEXT_STROKE = 8;
-    final int TEXT_SIZE = 40;
-    final int TEXT_MARGIN = 50;
-    final int MAXIMUM_MINES = 35;
+    final int TEXT_SIZE = 3 * CELLSIZE / 4;
+    final int FINAL_TEXT_SIZE = 2 * 3 * min(NUM_COLUMNS, NUM_ROWS) * CELLSIZE / (5 * 12);
+    final float TEXT_MARGIN = 4 * CELLSIZE / 5;
+    final int MAXIMUM_MINES = NUM_COLUMNS * NUM_ROWS / 2;
     //colors
     final int WHITE = color(255);
     final int RED = color(255, 0, 0);
@@ -37,13 +38,14 @@ public class Assignment5 extends PApplet {
     int[] guessY = new int[NUM_COLUMNS * NUM_ROWS];
     int[] guessVal = new int[NUM_COLUMNS * NUM_ROWS];
     //number of mines.
-    int numMines = 0, numGuess = 0, setMineNumber = 15, score = 0;
+    int numMines = 0, numGuess = 0, setMineNumber = MAXIMUM_MINES / 2, score = 0;
     boolean isLost = false, isWin = false;
 
     //settings can be used to set up size with constants.
     public void settings() {
         size(NUM_COLUMNS * CELLSIZE, NUM_ROWS * CELLSIZE);
     }
+
 
     public void setup() {
 //        size(600, 500); //size MUST be (NUM_COLUMNS*CELLSIZE) by (NUM_ROWS*CELLSIZE);
@@ -55,18 +57,18 @@ public class Assignment5 extends PApplet {
         drawGrid();
         generateMines(mineX, mineY, setMineNumber);
         //after generateMines the numMines should be same as setMineNumber
-//        drawMines(mineX, mineY, 20);
+        drawMines(mineX, mineY, numMines);
         drawNums(guessX, guessY, guessVal, numGuess);
         if (isLost) {
             //bigger text words
             drawMines(mineX, mineY, numMines);
-            textSize(3 * TEXT_SIZE / 2);
+            textSize(FINAL_TEXT_SIZE);
             text("GAME OVER! YOU LOST! \n To play again press n", TEXT_MARGIN / 3, height / 2);
         } else if (isWin) {
             //bigger text words
             drawMines(mineX, mineY, numMines);
-            textSize(3 * TEXT_SIZE / 2);
-            text("GAME OVER! YOU WON!\n To play again press n", TEXT_MARGIN / 3, height / 2);
+            textSize(FINAL_TEXT_SIZE);
+            text("GAME OVER! YOU WON!\n To play again press n \n your score is: " + str(score), TEXT_MARGIN / 3, height / 2);
         }
     }
 
@@ -151,21 +153,20 @@ public class Assignment5 extends PApplet {
 
         int gridX = getX(mouseX);
         int gridY = getY(mouseY);
-//        ~("THE CURRENT ONE IS:"+str(gridX)+" "+str(gridY)+'\n');
         int gridVal = 0;
         for (int i = 0; i < numMines; ++i) {
-            if ((int) abs(mineX[i] - gridX) <= 1 && (int) abs(mineY[i] - gridY) <= 1) {
+            if ((int) abs(mineX[i] - gridX) <= 1 && (int) abs(mineY[i] - gridY) <= 1)
                 gridVal++;
-//                print(str(mineX[i])+"   ");
-//                print(str(mineY[i])+"\n");
-            }
         }
         if (searchMines(mineX, mineY, numMines, gridX, gridY)) {
             isLost = true;
 
         } else {
+            //get one more score
+            ++score;
             numGuess = insertGuess(guessX, guessY, guessVal, numGuess, gridX, gridY, gridVal);
-            if (numGuess == NUM_ROWS * NUM_COLUMNS - numMines) isWin = true;
+            if (numGuess == NUM_ROWS * NUM_COLUMNS - setMineNumber) {
+                isWin = true；
         }
     }
 
@@ -174,7 +175,7 @@ public class Assignment5 extends PApplet {
         if (key == 'n') {
             //restart the game
             isWin = isLost = false;
-            numMines = numGuess = 0;
+            numMines = numGuess = score = 0;
             //increase mine number for harder game
             if (setMineNumber < MAXIMUM_MINES) setMineNumber++;
         }
