@@ -57,7 +57,7 @@ public class Assignment5 extends PApplet {
         drawGrid();
         generateMines(mineX, mineY, setMineNumber);
         //after generateMines the numMines should be same as setMineNumber
-        drawMines(mineX, mineY, numMines);
+//        drawMines(mineX, mineY, numMines);
         drawNums(guessX, guessY, guessVal, numGuess);
         if (isLost) {
             //bigger text words
@@ -167,10 +167,11 @@ public class Assignment5 extends PApplet {
             numGuess = insertGuess(guessX, guessY, guessVal, numGuess, gridX, gridY, gridVal);
             if (numGuess == NUM_ROWS * NUM_COLUMNS - setMineNumber) {
                 isWin = true;
+            }
         }
     }
 
-    //    @Override
+        @Override
     public void keyPressed() {
         if (key == 'n') {
             //restart the game
