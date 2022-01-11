@@ -166,7 +166,7 @@ public class Assignment5 extends PApplet {
             ++score;
             numGuess = insertGuess(guessX, guessY, guessVal, numGuess, gridX, gridY, gridVal);
             if (numGuess == NUM_ROWS * NUM_COLUMNS - setMineNumber) {
-                isWin = true；
+                isWin = true;
         }
     }
 
