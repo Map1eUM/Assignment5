@@ -23,6 +23,7 @@ public class Assignment5 extends PApplet {
     final int TEXT_STROKE = 8;
     final int TEXT_SIZE = 40;
     final int TEXT_MARGIN = 50;
+    final int MAXIMUM_MINES = 35;
     //colors
     final int WHITE = color(255);
     final int RED = color(255, 0, 0);
@@ -30,15 +31,16 @@ public class Assignment5 extends PApplet {
     final int BLUE = color(0, 0, 255);
     final int YELLOW = color(255, 255, 0);
     //the worst situation is all grid cells are mines.
-    int[] mineX = new int[NUM_COLUMNS * NUM_ROWS];
-    int[] mineY = new int[NUM_COLUMNS * NUM_ROWS];
+    int[] mineX = new int[MAXIMUM_MINES];
+    int[] mineY = new int[MAXIMUM_MINES];
     int[] guessX = new int[NUM_COLUMNS * NUM_ROWS];
     int[] guessY = new int[NUM_COLUMNS * NUM_ROWS];
     int[] guessVal = new int[NUM_COLUMNS * NUM_ROWS];
     //number of mines.
-    int numMines = 0, numGuess = 0;
+    int numMines = 0, numGuess = 0, setMineNumber = 15, score = 0;
     boolean isLost = false, isWin = false;
 
+    //settings can be used to set up size with constants.
     public void settings() {
         size(NUM_COLUMNS * CELLSIZE, NUM_ROWS * CELLSIZE);
     }
@@ -51,17 +53,18 @@ public class Assignment5 extends PApplet {
     public void draw() {
         background(WHITE);
         drawGrid();
-        generateMines(mineX, mineY, 20);
+        generateMines(mineX, mineY, setMineNumber);
+        //after generateMines the numMines should be same as setMineNumber
 //        drawMines(mineX, mineY, 20);
         drawNums(guessX, guessY, guessVal, numGuess);
         if (isLost) {
             //bigger text words
-            drawMines(mineX, mineY, 20);
+            drawMines(mineX, mineY, numMines);
             textSize(3 * TEXT_SIZE / 2);
             text("GAME OVER! YOU LOST! \n To play again press n", TEXT_MARGIN / 3, height / 2);
         } else if (isWin) {
             //bigger text words
-            drawMines(mineX, mineY, 20);
+            drawMines(mineX, mineY, numMines);
             textSize(3 * TEXT_SIZE / 2);
             text("GAME OVER! YOU WON!\n To play again press n", TEXT_MARGIN / 3, height / 2);
         }
@@ -128,9 +131,9 @@ public class Assignment5 extends PApplet {
             ellipse(CELLSIZE * column[i] + CELLSIZE / 2, CELLSIZE * row[i] + CELLSIZE / 2, CELLSIZE, CELLSIZE);
             fill(BLACK);
             rect(column[i] * CELLSIZE + CELLSIZE / 2 - ARROW_WIDTH / 2, row[i] * CELLSIZE + CELLSIZE / 2 - 2 * ARROW_HEIGHT / 3, ARROW_WIDTH, ARROW_HEIGHT);
-            float x1 = column[i] * CELLSIZE + CELLSIZE / 2;
-            float y1 = row[i] * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN;
-            triangle(x1, y1, x1 - ARROW_WIDTH / 2, y1 + TRIG_HEIGHT, x1 + ARROW_WIDTH / 2, y1 + TRIG_HEIGHT);
+            float triangleX1 = column[i] * CELLSIZE + CELLSIZE / 2;
+            float triangleY1 = row[i] * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN;
+            triangle(triangleX1, triangleY1, triangleX1 - ARROW_WIDTH / 2, triangleY1 + TRIG_HEIGHT, triangleX1 + ARROW_WIDTH / 2, triangleY1 + TRIG_HEIGHT);
             noFill();
         }
     }
@@ -144,7 +147,7 @@ public class Assignment5 extends PApplet {
     }
 
     public void mouseClicked() {
-        if (isLost) return;
+        if (isLost || isWin) return;
 
         int gridX = getX(mouseX);
         int gridY = getY(mouseY);
@@ -166,12 +169,14 @@ public class Assignment5 extends PApplet {
         }
     }
 
-    @Override
+    //    @Override
     public void keyPressed() {
         if (key == 'n') {
             //restart the game
             isWin = isLost = false;
             numMines = numGuess = 0;
+            //increase mine number for harder game
+            if (setMineNumber < MAXIMUM_MINES) setMineNumber++;
         }
     }
 
@@ -199,9 +204,11 @@ public class Assignment5 extends PApplet {
         ellipse(CELLSIZE * column + CELLSIZE / 2, CELLSIZE * row + CELLSIZE / 2, CELLSIZE, CELLSIZE);
         fill(BLACK);
         rect(column * CELLSIZE + CELLSIZE / 2 - ARROW_WIDTH / 2, row * CELLSIZE + CELLSIZE / 2 - 2 * ARROW_HEIGHT / 3, ARROW_WIDTH, ARROW_HEIGHT);
-        float x1 = column * CELLSIZE + CELLSIZE / 2;
-        float y1 = row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN;
-        triangle(x1, y1, x1 - ARROW_WIDTH / 2, y1 + TRIG_HEIGHT, x1 + ARROW_WIDTH / 2, y1 + TRIG_HEIGHT);
+
+        //draw the triangle figure.
+        float triangleX1 = column * CELLSIZE + CELLSIZE / 2;
+        float triangleY1 = row * CELLSIZE + CELLSIZE / 2 + ARROW_HEIGHT / 3 + FIGURE_MARGIN;
+        triangle(triangleX1, triangleY1, triangleX1 - ARROW_WIDTH / 2, triangleY1 + TRIG_HEIGHT, triangleX1 + ARROW_WIDTH / 2, triangleY1 + TRIG_HEIGHT);
         noFill();
     }
 
@@ -215,6 +222,7 @@ public class Assignment5 extends PApplet {
         strokeWeight(TEXT_STROKE);
         textSize(TEXT_SIZE);
         text(str(num), CELLSIZE * column + CELLSIZE / 2 - textWidth(str(num)) / 2, CELLSIZE * (row + 1) - textDescent());
+        //backtracking
         strokeWeight(1);
         noFill();
     }
