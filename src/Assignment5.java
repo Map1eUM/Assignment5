@@ -49,30 +49,21 @@ public class Assignment5 extends PApplet {
     }
 
     public void draw() {
+        background(WHITE);
         drawGrid();
-
-//        //create test arrays
-//        int[] mineX = {3, 1, 8, 11, 8, 4}; //mine column numbers
-//        int[] mineY = {4, 0, 7, 9, 2, 1}; //mine row numbers
-//
-//        drawMines(mineX, mineY, 6); //fill the cells with mines
-//
-//        int[] numX = {0, 10, 5, 2, 6, 7, 1, 11, 6};
-//        int[] numY = {2, 3, 6, 8, 0, 9, 6, 1, 4};
-//        int[] numValue = {3, 1, 4, 2, 5, 6, 0, 7, 8};
-//
-//        drawNums(numX, numY, numValue, 9);
         generateMines(mineX, mineY, 20);
-        drawMines(mineX, mineY, 20);
+//        drawMines(mineX, mineY, 20);
         drawNums(guessX, guessY, guessVal, numGuess);
         if (isLost) {
             //bigger text words
+            drawMines(mineX, mineY, 20);
             textSize(3 * TEXT_SIZE / 2);
-            text("GAME OVER! YOU LOST!", TEXT_MARGIN / 3, height / 2);
+            text("GAME OVER! YOU LOST! \n To play again press n", TEXT_MARGIN / 3, height / 2);
         } else if (isWin) {
             //bigger text words
+            drawMines(mineX, mineY, 20);
             textSize(3 * TEXT_SIZE / 2);
-            text("GAME OVER! YOU WON!", TEXT_MARGIN / 3, height / 2);
+            text("GAME OVER! YOU WON!\n To play again press n", TEXT_MARGIN / 3, height / 2);
         }
     }
 
@@ -157,7 +148,7 @@ public class Assignment5 extends PApplet {
 
         int gridX = getX(mouseX);
         int gridY = getY(mouseY);
-//        print("THE CURRENT ONE IS:"+str(gridX)+" "+str(gridY)+'\n');
+//        ~("THE CURRENT ONE IS:"+str(gridX)+" "+str(gridY)+'\n');
         int gridVal = 0;
         for (int i = 0; i < numMines; ++i) {
             if ((int) abs(mineX[i] - gridX) <= 1 && (int) abs(mineY[i] - gridY) <= 1) {
@@ -172,6 +163,15 @@ public class Assignment5 extends PApplet {
         } else {
             numGuess = insertGuess(guessX, guessY, guessVal, numGuess, gridX, gridY, gridVal);
             if (numGuess == NUM_ROWS * NUM_COLUMNS - numMines) isWin = true;
+        }
+    }
+
+    @Override
+    public void keyPressed() {
+        if (key == 'n') {
+            //restart the game
+            isWin = isLost = false;
+            numMines = numGuess = 0;
         }
     }
 
